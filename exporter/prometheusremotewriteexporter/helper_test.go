@@ -15,6 +15,7 @@
 package prometheusremotewriteexporter
 
 import (
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/prometheusremotewriteexporter/tenant"
 	"testing"
 
 	"github.com/prometheus/prometheus/prompb"
@@ -41,6 +42,7 @@ func Test_batchTimeSeries(t *testing.T) {
 		tsMap               map[string]*prompb.TimeSeries
 		maxBatchByteSize    int
 		numExpectedRequests int
+		tenant              string
 		returnErr           bool
 	}{
 		{
@@ -48,6 +50,7 @@ func Test_batchTimeSeries(t *testing.T) {
 			tsMap1,
 			100,
 			-1,
+			"",
 			true,
 		},
 		{
@@ -55,6 +58,7 @@ func Test_batchTimeSeries(t *testing.T) {
 			tsMap2,
 			300,
 			1,
+			"",
 			false,
 		},
 		{
@@ -62,19 +66,20 @@ func Test_batchTimeSeries(t *testing.T) {
 			tsMap3,
 			300,
 			2,
+			"",
 			false,
 		},
 	}
 	// run tests
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			requests, err := batchTimeSeries(tt.tsMap, tt.maxBatchByteSize)
+			requests, err := batchTimeSeries(nil, &tenant.StaticTenantSource{}, tt.tsMap, tt.maxBatchByteSize)
 			if tt.returnErr {
 				assert.Error(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, tt.numExpectedRequests, len(requests))
+			assert.Equal(t, tt.numExpectedRequests, len(requests[""]))
 		})
 	}
 }

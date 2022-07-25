@@ -48,6 +48,19 @@ type Config struct {
 	// If enabled, all the resource attributes will be converted to metric labels by default.
 	ResourceToTelemetrySettings resourcetotelemetry.Settings `mapstructure:"resource_to_telemetry_conversion"`
 	WAL                         *WALConfig                   `mapstructure:"wal"`
+
+	// Tenant defines how to obtain the tenant ID
+	Tenant *Tenant `mapstructure:"tenant"`
+}
+
+type Tenant struct {
+	// Source defines where to obtain the tenant ID. Possible values: static, context, attribute.
+	Source string `mapstruct:"source"`
+
+	// Value will be used by the tenant source provider to lookup the value. For instance,
+	// when the source=static, the value is a static value. When the source=context, value
+	// should be the context key that holds the tenant information.
+	Value string `mapstruct:"value"`
 }
 
 // RemoteWriteQueue allows to configure the remote write queue.
@@ -77,6 +90,17 @@ func (cfg *Config) Validate() error {
 
 	if cfg.RemoteWriteQueue.Enabled && cfg.RemoteWriteQueue.QueueSize == 0 {
 		return fmt.Errorf("a 0 size queue will drop all the data")
+	}
+
+	if cfg.Tenant != nil {
+		if cfg.Tenant.Source != "attributes" &&
+			cfg.Tenant.Source != "context" &&
+			cfg.Tenant.Source != "static" {
+			return fmt.Errorf(
+				"invalid tenant source, must be one of 'attributes', 'context', 'static', but is %s",
+				cfg.Tenant.Source,
+			)
+		}
 	}
 
 	if cfg.RemoteWriteQueue.NumConsumers < 0 {

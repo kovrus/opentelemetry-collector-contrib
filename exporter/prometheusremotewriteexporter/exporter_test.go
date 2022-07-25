@@ -634,11 +634,11 @@ func Test_PushMetrics(t *testing.T) {
 					prwe, nErr := newPRWExporter(cfg, set)
 					require.NoError(t, nErr)
 					ctx, cancel := context.WithCancel(context.Background())
-					defer cancel()
+					t.Cleanup(cancel)
 					require.NoError(t, prwe.Start(ctx, componenttest.NewNopHost()))
-					defer func() {
+					t.Cleanup(func() {
 						require.NoError(t, prwe.Shutdown(ctx))
-					}()
+					})
 					err := prwe.PushMetrics(ctx, *tt.metrics)
 					if tt.returnErr {
 						assert.Error(t, err)
@@ -818,7 +818,7 @@ func TestWALOnExporterRoundTrip(t *testing.T) {
 		assert.Error(t, prwe.Shutdown(ctx))
 		close(exiting)
 	})
-	require.NotNil(t, prwe.wal)
+	require.NotNil(t, prwe.wals)
 
 	ts1 := &prompb.TimeSeries{
 		Labels:  []prompb.Label{{Name: "ts1l1", Value: "ts1k1"}},
@@ -840,7 +840,7 @@ func TestWALOnExporterRoundTrip(t *testing.T) {
 
 	// 3. Let's now read back all of the WAL records and ensure
 	// that all the prompb.WriteRequest values exist as we sent them.
-	wal, _, werr := cfg.WAL.createWAL()
+	wal, _, werr := cfg.WAL.createWAL("")
 	assert.NoError(t, werr)
 	assert.NotNil(t, wal)
 	t.Cleanup(func() {
@@ -890,7 +890,7 @@ func TestWALOnExporterRoundTrip(t *testing.T) {
 	t.Cleanup(func() {
 		assert.NoError(t, prwe2.Shutdown(ctx))
 	})
-	require.NotNil(t, prwe2.wal)
+	require.NotNil(t, prwe2.wals)
 
 	snappyEncodedBytes := <-uploadedBytesCh
 	decodeBuffer := make([]byte, len(snappyEncodedBytes))
