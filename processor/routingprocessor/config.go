@@ -18,6 +18,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/telemetryquerylanguage/contexts/tqllogs"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/telemetryquerylanguage/tql"
 	"go.opentelemetry.io/collector/config"
 )
 
@@ -57,21 +59,33 @@ type Config struct {
 
 // Validate checks if the processor configuration is valid.
 func (c *Config) Validate() error {
+	// validate that there's at least one item in the table
+	if len(c.Table) == 0 {
+		return fmt.Errorf("invalid routing table: %w", errNoTableItems)
+	}
+
 	// validate that every route has a value for the routing attribute and has
 	// at least one exporter
 	for _, item := range c.Table {
-		if len(item.Value) == 0 {
+		if len(item.Value) == 0 && len(item.Statement) == 0 {
 			return fmt.Errorf("invalid (empty) route : %w", errEmptyRoute)
 		}
 
 		if len(item.Exporters) == 0 {
 			return fmt.Errorf("invalid route %s: %w", item.Value, errNoExporters)
 		}
-	}
 
-	// validate that there's at least one item in the table
-	if len(c.Table) == 0 {
-		return fmt.Errorf("invalid routing table: %w", errNoTableItems)
+		if len(item.Statement) != 0 {
+			_, err := tql.ParseQueries(
+				[]string{item.Statement},
+				functions(),
+				tqllogs.ParsePath,
+				tqllogs.ParseEnum,
+			)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	// we also need a "FromAttribute" value
@@ -102,6 +116,8 @@ const (
 type RoutingTableItem struct {
 	// Value represents a possible value for the field specified under FromAttribute. Required.
 	Value string `mapstructure:"value"`
+
+	Statement string `mapstructure:"statement"`
 
 	// Exporters contains the list of exporters to use when the value from the FromAttribute field matches this table item.
 	// When no exporters are specified, the ones specified under DefaultExporters are used, if any.

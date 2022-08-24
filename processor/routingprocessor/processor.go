@@ -17,7 +17,10 @@ package routingprocessor // import "github.com/open-telemetry/opentelemetry-coll
 import (
 	"context"
 	"errors"
+	"fmt"
 
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/telemetryquerylanguage/contexts/tqllogs"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/pkg/telemetryquerylanguage/tql"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config"
 	"go.opentelemetry.io/collector/consumer"
@@ -46,9 +49,47 @@ var (
 type processorImp struct {
 	logger *zap.Logger
 
+	routes        map[Condition][]string
 	metricsRouter router[component.MetricsExporter]
 	logsRouter    router[component.LogsExporter]
 	tracesRouter  router[component.TracesExporter]
+}
+
+type RouteEntry struct {
+	exporters []string
+	statement StmtCondition
+}
+
+type Condition interface {
+	value() string
+}
+
+func NewRouteCondition(stmt string) (StmtCondition, error) {
+	queries, err := tql.ParseQueries([]string{stmt}, functions(), tqllogs.ParsePath, tqllogs.ParseEnum)
+	if err != nil {
+		return StmtCondition{}, err
+	}
+	if len(queries) != 1 {
+		return StmtCondition{}, errors.New("")
+	}
+	return StmtCondition{queries[0]}, nil
+
+}
+
+type StmtCondition struct {
+	tql.Query
+}
+
+func (r StmtCondition) value() string {
+	return ""
+}
+
+type ValueCondition struct {
+	string
+}
+
+func (r ValueCondition) value() string {
+	return r.string
 }
 
 // newProcessor creates new processor
@@ -57,38 +98,83 @@ func newProcessor(logger *zap.Logger, cfg config.Processor) *processorImp {
 
 	oCfg := cfg.(*Config)
 
+	routes := make(map[Condition][]string)
+	for _, table := range oCfg.Table {
+		if len(table.Statement) != 0 {
+			c, err := NewRouteCondition(table.Statement)
+			if err != nil {
+				print(err)
+			}
+			routes[&c] = table.Exporters
+		} else {
+			if oCfg.AttributeSource == resourceAttributeSource {
+				stmt := "route() "
+				if oCfg.DropRoutingResourceAttribute {
+					stmt = fmt.Sprintf("delete_key(resource.attributes, \"%s\") ", oCfg.FromAttribute)
+				}
+				stmt += " where resource.attributes[\"%s\"] == \"%s\""
+				c, err := NewRouteCondition(fmt.Sprintf(stmt, oCfg.FromAttribute, table.Value))
+				if err != nil {
+					print(err)
+				}
+				routes[&c] = table.Exporters
+			} else {
+				routes[ValueCondition{table.Value}] = table.Exporters
+			}
+		}
+	}
+
+	var e *extractor
+	if oCfg.AttributeSource == contextAttributeSource {
+		e = &extractor{fromAttr: oCfg.FromAttribute, logger: logger}
+	}
 	return &processorImp{
-		logger:        logger,
-		metricsRouter: newRouter[component.MetricsExporter](*oCfg, logger),
-		logsRouter:    newRouter[component.LogsExporter](*oCfg, logger),
-		tracesRouter:  newRouter[component.TracesExporter](*oCfg, logger),
+		logger: logger,
+
+		routes: routes,
+		metricsRouter: newRouter[component.MetricsExporter](
+			oCfg.DefaultExporters,
+			routes,
+			e,
+			logger,
+		),
+		logsRouter: newRouter[component.LogsExporter](
+			oCfg.DefaultExporters,
+			routes,
+			e,
+			logger,
+		),
+		tracesRouter: newRouter[component.TracesExporter](
+			oCfg.DefaultExporters,
+			routes,
+			e,
+			logger,
+		),
 	}
 }
 
 func (e *processorImp) Start(_ context.Context, host component.Host) error {
 	exporters := host.GetExporters()
 
-	err := e.metricsRouter.RegisterExportersForType(exporters, config.MetricsDataType)
+	err := e.metricsRouter.registerExportersForType(exporters, config.MetricsDataType)
 	if err != nil {
 		return err
-	}
-	err = e.logsRouter.RegisterExportersForType(exporters, config.LogsDataType)
-	if err != nil {
-		return err
-	}
-	err = e.tracesRouter.RegisterExportersForType(exporters, config.TracesDataType)
-	if err != nil {
-		return err
-	}
-	if len(e.tracesRouter.exporters) == 0 &&
-		len(e.tracesRouter.defaultExporters) == 0 &&
-		len(e.metricsRouter.exporters) == 0 &&
-		len(e.metricsRouter.defaultExporters) == 0 &&
-		len(e.logsRouter.exporters) == 0 &&
-		len(e.logsRouter.defaultExporters) == 0 {
-		return errNoExportersAfterRegistration
 	}
 
+	err = e.logsRouter.registerExportersForType(exporters, config.LogsDataType)
+	if err != nil {
+		return err
+	}
+	err = e.tracesRouter.registerExportersForType(exporters, config.TracesDataType)
+	if err != nil {
+		return err
+	}
+
+	if !e.metricsRouter.hasExporters() &&
+		!e.logsRouter.hasExporters() &&
+		!e.tracesRouter.hasExporters() {
+		return errNoExportersAfterRegistration
+	}
 	return nil
 }
 

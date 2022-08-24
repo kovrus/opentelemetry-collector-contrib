@@ -18,7 +18,6 @@ import (
 	"context"
 	"strings"
 
-	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"
 )
@@ -38,17 +37,6 @@ func newExtractor(fromAttr string, logger *zap.Logger) extractor {
 		fromAttr: fromAttr,
 		logger:   logger,
 	}
-}
-
-// extractAttrFromResource extract string value from the requested resource attribute.
-func (e extractor) extractAttrFromResource(r pcommon.Resource) string {
-	firstResourceAttributes := r.Attributes()
-	routingAttribute, found := firstResourceAttributes.Get(e.fromAttr)
-	if !found {
-		return ""
-	}
-
-	return routingAttribute.AsString()
 }
 
 func (e extractor) extractFromContext(ctx context.Context) string {
