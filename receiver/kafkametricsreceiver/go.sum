@@ -40,8 +40,8 @@ github.com/HdrHistogram/hdrhistogram-go v1.1.2 h1:5IcZpTvzydCQeHzK4Ef/D5rrSqwxob
 github.com/Microsoft/go-winio v0.4.14/go.mod h1:qXqCSQ3Xa7+6tgxaGTIe4Kpcdsi+P8jBhyzoq1bpyYA=
 github.com/Microsoft/go-winio v0.5.1 h1:aPJp2QD7OOrhO5tQXqQoGSJc+DjDtWTGLOmNyAm6FgY=
 github.com/Microsoft/go-winio v0.5.1/go.mod h1:JPGBdM1cNvN/6ISo+n8V5iA4v8pBzdOpzfwIujj1a84=
-github.com/Shopify/sarama v1.37.0 h1:WmHgUY/omLM9SCr9nhRwVhL7Kln+4RmVujW1ffZUDjs=
-github.com/Shopify/sarama v1.37.0/go.mod h1:smFYoF2zzSNsxF2V9MXRew2PrMfBGAJUJOA0Edd+v4s=
+github.com/Shopify/sarama v1.37.1 h1:T1WU59mQa3sQ3C9PNd2IbOqvK5vqy/N9mTnEzMMnk7c=
+github.com/Shopify/sarama v1.37.1/go.mod h1:smFYoF2zzSNsxF2V9MXRew2PrMfBGAJUJOA0Edd+v4s=
 github.com/Shopify/toxiproxy/v2 v2.5.0 h1:i4LPT+qrSlKNtQf5QliVjdP08GyAH8+BUIc9gT0eahc=
 github.com/Shopify/toxiproxy/v2 v2.5.0/go.mod h1:yhM2epWtAmel9CB8r2+L+PCmhH6yH2pITaPAo7jxJl0=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
