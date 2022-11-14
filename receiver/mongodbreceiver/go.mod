@@ -9,7 +9,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.15.0
 	go.mongodb.org/mongo-driver v1.10.3
 	go.opentelemetry.io/collector v0.64.0
-	go.opentelemetry.io/collector/pdata v0.64.0
+	go.opentelemetry.io/collector/pdata v0.64.1
 	go.uber.org/multierr v1.8.0
 	go.uber.org/zap v1.23.0
 )
