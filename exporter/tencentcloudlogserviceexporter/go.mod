@@ -8,7 +8,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.532
 	go.opentelemetry.io/collector v0.65.0
-	go.opentelemetry.io/collector/component v0.65.0
+	go.opentelemetry.io/collector/component v0.66.0
 	go.opentelemetry.io/collector/pdata v0.65.0
 	go.opentelemetry.io/collector/semconv v0.65.0
 	go.uber.org/zap v1.23.0
