@@ -13,7 +13,7 @@ require (
 	go.opentelemetry.io/collector/pdata v0.66.1-0.20221202005155-1c54042beb70
 	go.opentelemetry.io/collector/semconv v0.66.1-0.20221202005155-1c54042beb70
 	go.uber.org/zap v1.24.0
-	golang.org/x/net v0.3.0
+	golang.org/x/net v0.4.0
 )
 
 require (
