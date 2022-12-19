@@ -13,7 +13,7 @@ require (
 	go.opentelemetry.io/collector/consumer v0.66.1-0.20221202005155-1c54042beb70
 	go.opentelemetry.io/collector/featuregate v0.66.1-0.20221202005155-1c54042beb70
 	go.opentelemetry.io/collector/pdata v0.66.1-0.20221202005155-1c54042beb70
-	go.uber.org/multierr v1.8.0
+	go.uber.org/multierr v1.9.0
 	go.uber.org/zap v1.24.0
 )
 
