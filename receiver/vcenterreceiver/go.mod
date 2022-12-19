@@ -7,7 +7,7 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/comparetest v0.66.0
 	github.com/stretchr/testify v1.8.1
-	github.com/vmware/govmomi v0.29.0
+	github.com/vmware/govmomi v0.30.0
 	go.opentelemetry.io/collector v0.66.1-0.20221202005155-1c54042beb70
 	go.opentelemetry.io/collector/component v0.66.1-0.20221202005155-1c54042beb70
 	go.opentelemetry.io/collector/confmap v0.0.0-20221201172708-2bdff61fa52a
