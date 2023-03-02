@@ -62,8 +62,9 @@ type connectorImp struct {
 	startTimestamp pcommon.Timestamp
 
 	// Metrics
-	histograms metrics.HistogramMetrics
-	sums       metrics.SumMetrics
+	resourceHistograms map[string]metrics.HistogramMetrics
+	resourceSums       map[string]metrics.SumMetrics
+	resourceAttributes map[string]pcommon.Map
 
 	keyBuf *bytes.Buffer
 
@@ -107,48 +108,42 @@ func newConnector(logger *zap.Logger, config component.Config, ticker *clock.Tic
 		return nil, err
 	}
 
-	var histograms metrics.HistogramMetrics
-	if cfg.Histogram.Exponential != nil {
-		maxSize := cfg.Histogram.Exponential.MaxSize
-		if cfg.Histogram.Exponential.MaxSize == 0 {
-			maxSize = structure.DefaultMaxSize
-		}
-		histograms = &metrics.ExponentialHistogramMetrics{
-			Metrics: make(map[metrics.Key]*metrics.ExponentialHistogram),
-			MaxSize: maxSize,
-		}
-	} else {
-		bounds := defaultHistogramBucketsMs
-		// TODO remove deprecated `latency_histogram_buckets`
-		if cfg.LatencyHistogramBuckets != nil {
-			logger.Warn("latency_histogram_buckets is deprecated. " +
-				"Use `histogram: explicit: buckets` to set histogram buckets")
-			bounds = mapDurationsToMillis(cfg.LatencyHistogramBuckets)
-		}
-		if cfg.Histogram.Explicit != nil && cfg.Histogram.Explicit.Buckets != nil {
-			bounds = mapDurationsToMillis(cfg.Histogram.Explicit.Buckets)
-		}
-		histograms = &metrics.ExplicitHistogramMetrics{
-			Metrics: make(map[metrics.Key]*metrics.ExplicitHistogram),
-			Bounds:  bounds,
-		}
-	}
-	sums := metrics.SumMetrics{
-		Metrics: make(map[metrics.Key]*metrics.Sum),
-	}
-
 	return &connectorImp{
 		logger:                logger,
 		config:                *cfg,
 		startTimestamp:        pcommon.NewTimestampFromTime(time.Now()),
-		histograms:            histograms,
-		sums:                  sums,
+		resourceHistograms:    make(map[string]metrics.HistogramMetrics),
+		resourceSums:          make(map[string]metrics.SumMetrics),
+		resourceAttributes:    make(map[string]pcommon.Map),
 		dimensions:            newDimensions(cfg.Dimensions),
 		keyBuf:                bytes.NewBuffer(make([]byte, 0, 1024)),
 		metricKeyToDimensions: metricKeyToDimensionsCache,
 		ticker:                ticker,
 		done:                  make(chan struct{}),
 	}, nil
+}
+
+func (p *connectorImp) initHistogramMetrics() metrics.HistogramMetrics {
+	cfg := p.config
+	if cfg.Histogram.Exponential != nil {
+		maxSize := structure.DefaultMaxSize
+		if cfg.Histogram.Exponential.MaxSize != 0 {
+			maxSize = cfg.Histogram.Exponential.MaxSize
+		}
+		return metrics.NewExponentialHistogramMetrics(maxSize)
+	} else {
+		bounds := defaultHistogramBucketsMs
+		// TODO remove deprecated `latency_histogram_buckets`
+		if cfg.LatencyHistogramBuckets != nil {
+			p.logger.Warn("latency_histogram_buckets is deprecated. " +
+				"Use `histogram: explicit: buckets` to set histogram buckets")
+			bounds = mapDurationsToMillis(cfg.LatencyHistogramBuckets)
+		}
+		if cfg.Histogram.Explicit != nil && cfg.Histogram.Explicit.Buckets != nil {
+			bounds = mapDurationsToMillis(cfg.Histogram.Explicit.Buckets)
+		}
+		return metrics.NewExplicitHistogramMetrics(bounds)
+	}
 }
 
 // durationToMillis converts the given duration to the number of milliseconds it represents.
@@ -232,45 +227,59 @@ func (p *connectorImp) exportMetrics(ctx context.Context) {
 // writes the raw metrics data into the metrics object.
 func (p *connectorImp) buildMetrics() pmetric.Metrics {
 	m := pmetric.NewMetrics()
-	ilm := m.ResourceMetrics().AppendEmpty().ScopeMetrics().AppendEmpty()
-	ilm.Scope().SetName("spanmetricsconnector")
+	for key, attr := range p.resourceAttributes {
+		rm := m.ResourceMetrics().AppendEmpty()
+		attr.CopyTo(rm.Resource().Attributes())
 
-	p.buildCallsMetrics(ilm)
-	p.buildLatencyMetrics(ilm)
+		sm := rm.ScopeMetrics().AppendEmpty()
+		sm.Scope().SetName("spanmetricsconnector")
 
+		sums, _ := p.resourceSums[key]
+		p.buildCallsMetrics(sm, sums)
+
+		histograms, _ := p.resourceHistograms[key]
+		p.buildLatencyMetrics(sm, histograms)
+	}
 	return m
 }
 
 // buildCallsMetrics collects the raw call count metrics and builds
 // a explicit or exponential buckets histogram scope metric.
-func (p *connectorImp) buildLatencyMetrics(ilm pmetric.ScopeMetrics) {
+func (p *connectorImp) buildLatencyMetrics(ilm pmetric.ScopeMetrics, histograms metrics.HistogramMetrics) {
 	m := ilm.Metrics().AppendEmpty()
 	m.SetName(buildMetricName(p.config.Namespace, metricNameLatency))
 	m.SetUnit("ms")
 
-	p.histograms.BuildMetrics(m, p.startTimestamp, p.config.GetAggregationTemporality())
+	histograms.BuildMetrics(m, p.startTimestamp, p.config.GetAggregationTemporality())
 }
 
 // buildCallsMetrics collects the raw call count metrics and builds
 // a sum scope metric.
-func (p *connectorImp) buildCallsMetrics(ilm pmetric.ScopeMetrics) {
+func (p *connectorImp) buildCallsMetrics(ilm pmetric.ScopeMetrics, sums metrics.SumMetrics) {
 	m := ilm.Metrics().AppendEmpty()
 	m.SetName(buildMetricName(p.config.Namespace, metricNameCalls))
 
-	p.sums.BuildMetrics(m, p.startTimestamp, p.config.GetAggregationTemporality())
+	sums.BuildMetrics(m, p.startTimestamp, p.config.GetAggregationTemporality())
 }
 
 func (p *connectorImp) resetState() {
 	// If delta metrics, reset accumulated data
 	if p.config.GetAggregationTemporality() == pmetric.AggregationTemporalityDelta {
-		p.histograms.Reset(false)
-		p.sums.Reset()
+		for _, h := range p.resourceHistograms {
+			h.Reset(false)
+		}
+		for _, s := range p.resourceSums {
+			s.Reset()
+		}
+		p.resourceAttributes = make(map[string]pcommon.Map)
 		p.metricKeyToDimensions.Purge()
 	} else {
 		p.metricKeyToDimensions.RemoveEvictedItems()
 
 		// Exemplars are only relevant to this batch of traces, so must be cleared within the lock
-		p.histograms.Reset(true)
+		for _, h := range p.resourceHistograms {
+			h.Reset(true)
+		}
 	}
 }
 
@@ -287,6 +296,33 @@ func (p *connectorImp) aggregateMetrics(traces ptrace.Traces) {
 			continue
 		}
 		serviceName := serviceAttr.Str()
+
+		p.keyBuf.Reset()
+		resourceAttr.Range(func(k string, v pcommon.Value) bool {
+			p.keyBuf.WriteString(k)
+			p.keyBuf.WriteString(metricKeySeparator)
+			p.keyBuf.WriteString(v.AsString())
+			return true
+		})
+		rkey := p.keyBuf.String()
+
+		if _, ok := p.resourceAttributes[rkey]; !ok {
+			p.resourceAttributes[rkey] = resourceAttr
+		}
+		histograms, ok := p.resourceHistograms[rkey]
+		if !ok {
+			histograms = p.initHistogramMetrics()
+			p.resourceHistograms[rkey] = histograms
+		}
+
+		sums, ok := p.resourceSums[rkey]
+		if !ok {
+			sums = metrics.SumMetrics{
+				Metrics: make(map[metrics.Key]*metrics.Sum),
+			}
+			p.resourceSums[rkey] = sums
+		}
+
 		ilsSlice := rspans.ScopeSpans()
 		for j := 0; j < ilsSlice.Len(); j++ {
 			ils := ilsSlice.At(j)
@@ -309,27 +345,25 @@ func (p *connectorImp) aggregateMetrics(traces ptrace.Traces) {
 				}
 
 				// aggregate histogram metrics
-				h := p.histograms.GetOrCreate(key, attributes)
+				h := histograms.GetOrCreate(key, attributes)
 				h.Observe(latencyMs)
 				if !span.TraceID().IsEmpty() {
 					h.AddExemplar(span.TraceID(), span.SpanID(), latencyMs)
 				}
 
-				p.aggregateSumMetrics(key, attributes)
+				// aggregate sum metrics
+				s, ok := sums.Metrics[key]
+				if !ok {
+					s = &metrics.Sum{
+						Attributes: attributes,
+					}
+					sums.Metrics[key] = s
+				}
+				s.Count++
 			}
-		}
-	}
-}
 
-func (p *connectorImp) aggregateSumMetrics(key metrics.Key, attributes pcommon.Map) {
-	s, ok := p.sums.Metrics[key]
-	if !ok {
-		s = &metrics.Sum{
-			Attributes: attributes,
 		}
-		p.sums.Metrics[key] = s
 	}
-	s.Count++
 }
 
 func (p *connectorImp) buildAttributes(serviceName string, span ptrace.Span, resourceAttrs pcommon.Map) pcommon.Map {

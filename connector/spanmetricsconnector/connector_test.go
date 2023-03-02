@@ -337,17 +337,11 @@ func initSpan(span span, s ptrace.Span) {
 }
 
 func initExplicitHistograms() HistogramMetrics {
-	return &ExplicitHistogramMetrics{
-		Metrics: make(map[Key]*ExplicitHistogram),
-		Bounds:  defaultHistogramBucketsMs,
-	}
+	return NewExplicitHistogramMetrics(defaultHistogramBucketsMs)
 }
 
 func initExponentialHistograms() HistogramMetrics {
-	return &ExponentialHistogramMetrics{
-		Metrics: make(map[Key]*ExponentialHistogram),
-		MaxSize: 10,
-	}
+	return NewExponentialHistogramMetrics(10)
 }
 
 func TestBuildKeySameServiceNameCharSequence(t *testing.T) {
@@ -530,7 +524,7 @@ func TestConfigureLatencyBounds(t *testing.T) {
 	assert.Equal(
 		t,
 		[]float64{0.000003, 0.003, 3, 3000},
-		c.histograms.(*ExplicitHistogramMetrics).Bounds,
+		c.initHistogramMetrics().(*ExplicitHistogramMetrics).Bounds,
 	)
 }
 
@@ -549,7 +543,7 @@ func TestConfigureMaxBuckets(t *testing.T) {
 	// Verify
 	assert.NoError(t, err)
 	assert.NotNil(t, c)
-	assert.Equal(t, int32(10), c.histograms.(*ExponentialHistogramMetrics).MaxSize)
+	assert.Equal(t, int32(10), c.initHistogramMetrics().(*ExponentialHistogramMetrics).MaxSize)
 }
 
 func TestConnectorCapabilities(t *testing.T) {
@@ -816,8 +810,13 @@ func newConnectorImp(
 		metricsConsumer: mcon,
 
 		startTimestamp: pcommon.NewTimestampFromTime(time.Now()),
-		histograms:     histograms(),
-		sums:           SumMetrics{Metrics: make(map[Key]*Sum)},
+		resourceHistograms: map[string]HistogramMetrics{
+			"": histograms(),
+		},
+		resourceSums: map[string]SumMetrics{
+			"": {Metrics: make(map[Key]*Sum)},
+		},
+		resourceAttributes: make(map[string]pcommon.Map),
 		dimensions: []dimension{
 			// Set nil defaults to force a lookup for the attribute in the span.
 			{stringAttrName, nil},
@@ -929,7 +928,7 @@ func TestConnectorConsumeTracesEvictedCacheKey(t *testing.T) {
 
 		// GreaterOrEqual is particularly necessary for the second assertion where we
 		// expect 4 data points; but could also be 6 due to the non-deterministic nature
-		// of the p.histograms map which, through the act of "Get"ting a cached key, will
+		// of the p.resourceHistograms map which, through the act of "Get"ting a cached key, will
 		// lead to updating its recent-ness.
 		require.GreaterOrEqual(t, input.DataPointCount(), wantDataPointCounts[0])
 		wantDataPointCounts = wantDataPointCounts[1:] // Dequeue

@@ -47,30 +47,37 @@ type ExponentialHistogramMetrics struct {
 }
 
 type ExplicitHistogram struct {
-	Attributes pcommon.Map
-	Exemplars  pmetric.ExemplarSlice
+	attributes pcommon.Map
+	exemplars  pmetric.ExemplarSlice
 
 	BucketCounts []uint64
-	Count        uint64
-	Sum          float64
+	count        uint64
+	sum          float64
 
-	Bounds []float64
+	bounds []float64
 }
 
 type ExponentialHistogram struct {
-	Attributes pcommon.Map
-	Exemplars  pmetric.ExemplarSlice
+	attributes pcommon.Map
+	exemplars  pmetric.ExemplarSlice
 
-	Agg *structure.Histogram[float64]
+	agg *structure.Histogram[float64]
+}
+
+func NewExplicitHistogramMetrics(bounds []float64) *ExplicitHistogramMetrics {
+	return &ExplicitHistogramMetrics{
+		Metrics: make(map[Key]*ExplicitHistogram),
+		Bounds:  bounds,
+	}
 }
 
 func (m *ExplicitHistogramMetrics) GetOrCreate(key Key, attributes pcommon.Map) Histogram {
 	h, ok := m.Metrics[key]
 	if !ok {
 		h = &ExplicitHistogram{
-			Attributes:   attributes,
-			Exemplars:    pmetric.NewExemplarSlice(),
-			Bounds:       m.Bounds,
+			attributes:   attributes,
+			exemplars:    pmetric.NewExemplarSlice(),
+			bounds:       m.Bounds,
 			BucketCounts: make([]uint64, len(m.Bounds)+1),
 		}
 		m.Metrics[key] = h
@@ -92,26 +99,33 @@ func (m *ExplicitHistogramMetrics) BuildMetrics(
 		dp := dps.AppendEmpty()
 		dp.SetStartTimestamp(start)
 		dp.SetTimestamp(timestamp)
-		dp.ExplicitBounds().FromRaw(h.Bounds)
+		dp.ExplicitBounds().FromRaw(h.bounds)
 		dp.BucketCounts().FromRaw(h.BucketCounts)
-		dp.SetCount(h.Count)
-		dp.SetSum(h.Sum)
+		dp.SetCount(h.count)
+		dp.SetSum(h.sum)
 		for i := 0; i < dp.Exemplars().Len(); i++ {
 			dp.Exemplars().At(i).SetTimestamp(timestamp)
 		}
-		h.Attributes.CopyTo(dp.Attributes())
+		h.attributes.CopyTo(dp.Attributes())
 	}
 }
 
 func (m *ExplicitHistogramMetrics) Reset(onlyExemplars bool) {
 	if onlyExemplars {
 		for _, h := range m.Metrics {
-			h.Exemplars = pmetric.NewExemplarSlice()
+			h.exemplars = pmetric.NewExemplarSlice()
 		}
 		return
 	}
 
 	m.Metrics = make(map[Key]*ExplicitHistogram)
+}
+
+func NewExponentialHistogramMetrics(maxSize int32) *ExponentialHistogramMetrics {
+	return &ExponentialHistogramMetrics{
+		Metrics: make(map[Key]*ExponentialHistogram),
+		MaxSize: maxSize,
+	}
 }
 
 func (m *ExponentialHistogramMetrics) GetOrCreate(key Key, attributes pcommon.Map) Histogram {
@@ -124,9 +138,9 @@ func (m *ExponentialHistogramMetrics) GetOrCreate(key Key, attributes pcommon.Ma
 		agg.Init(cfg)
 
 		h = &ExponentialHistogram{
-			Agg:        agg,
-			Attributes: attributes,
-			Exemplars:  pmetric.NewExemplarSlice(),
+			agg:        agg,
+			attributes: attributes,
+			exemplars:  pmetric.NewExemplarSlice(),
 		}
 		m.Metrics[key] = h
 	}
@@ -147,11 +161,11 @@ func (m *ExponentialHistogramMetrics) BuildMetrics(
 		dp := dps.AppendEmpty()
 		dp.SetStartTimestamp(start)
 		dp.SetTimestamp(timestamp)
-		expoHistToExponentialDataPoint(h.Agg, dp)
+		expoHistToExponentialDataPoint(h.agg, dp)
 		for i := 0; i < dp.Exemplars().Len(); i++ {
 			dp.Exemplars().At(i).SetTimestamp(timestamp)
 		}
-		h.Attributes.CopyTo(dp.Attributes())
+		h.attributes.CopyTo(dp.Attributes())
 	}
 }
 
@@ -189,7 +203,7 @@ func expoHistToExponentialDataPoint(agg *structure.Histogram[float64], dp pmetri
 func (m *ExponentialHistogramMetrics) Reset(onlyExemplars bool) {
 	if onlyExemplars {
 		for _, h := range m.Metrics {
-			h.Exemplars = pmetric.NewExemplarSlice()
+			h.exemplars = pmetric.NewExemplarSlice()
 		}
 		return
 	}
@@ -198,27 +212,27 @@ func (m *ExponentialHistogramMetrics) Reset(onlyExemplars bool) {
 }
 
 func (h *ExplicitHistogram) Observe(value float64) {
-	h.Sum += value
-	h.Count++
+	h.sum += value
+	h.count++
 
 	// Binary search to find the latencyMs bucket index.
-	index := sort.SearchFloat64s(h.Bounds, value)
+	index := sort.SearchFloat64s(h.bounds, value)
 	h.BucketCounts[index]++
 }
 
 func (h *ExplicitHistogram) AddExemplar(traceID pcommon.TraceID, spanID pcommon.SpanID, value float64) {
-	e := h.Exemplars.AppendEmpty()
+	e := h.exemplars.AppendEmpty()
 	e.SetTraceID(traceID)
 	e.SetSpanID(spanID)
 	e.SetDoubleValue(value)
 }
 
 func (h *ExponentialHistogram) Observe(value float64) {
-	h.Agg.Update(value)
+	h.agg.Update(value)
 }
 
 func (h *ExponentialHistogram) AddExemplar(traceID pcommon.TraceID, spanID pcommon.SpanID, value float64) {
-	e := h.Exemplars.AppendEmpty()
+	e := h.exemplars.AppendEmpty()
 	e.SetTraceID(traceID)
 	e.SetSpanID(spanID)
 	e.SetDoubleValue(value)
