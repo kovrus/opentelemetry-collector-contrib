@@ -485,12 +485,12 @@ go.opentelemetry.io/collector v0.72.1-0.20230306190955-966865880707 h1:5Kbq7qwa3
 go.opentelemetry.io/collector v0.72.1-0.20230306190955-966865880707/go.mod h1:mipGzL7Jo3jLN//EqYbjEr7vJjuR1zY879r9VDbst6c=
 go.opentelemetry.io/collector/component v0.72.1-0.20230306190955-966865880707 h1:t5/eAifVFggUyPZAIt4kzyP3lPrfp+avbrGKjJUf1Gc=
 go.opentelemetry.io/collector/component v0.72.1-0.20230306190955-966865880707/go.mod h1:NpOANDFWRaAADbjj5K/IMJMyPkW64y4o+uSSAiRVZsE=
-go.opentelemetry.io/collector/confmap v0.72.1-0.20230306190955-966865880707 h1:4JAkbuxQ8Be5/ltVvOssca9cjniPCRbi51Q7hWkds54=
-go.opentelemetry.io/collector/confmap v0.72.1-0.20230306190955-966865880707/go.mod h1:pSzdsQ6G03jzM4BTiDx8OnrfidfUImkghM8+hvg8r40=
+go.opentelemetry.io/collector/confmap v0.73.0 h1:tC8x8sDk7JQ3QcbosqrxLe756sYcg4iUdTXsx7Ie4CM=
+go.opentelemetry.io/collector/confmap v0.73.0/go.mod h1:zEYi9hTAYmCHvN3XWxlN8LvHBrhs2FyQ99k7Ox60L1A=
 go.opentelemetry.io/collector/consumer v0.72.1-0.20230306190955-966865880707 h1:N7C2YGOEdrJ+Sjeh6MxLZMW1uHzJbLZ3IZRV2824vrQ=
 go.opentelemetry.io/collector/consumer v0.72.1-0.20230306190955-966865880707/go.mod h1:o8JvxU/9CoM+4jMQ14S1smG/zzGv70gATaOC6/U7Ms8=
-go.opentelemetry.io/collector/featuregate v0.72.1-0.20230306190955-966865880707 h1:uz6RNCbQx1hA8ZYOLA6r6BmK+XjQIhL5Ep5dp5ZBqsM=
-go.opentelemetry.io/collector/featuregate v0.72.1-0.20230306190955-966865880707/go.mod h1:oIrO4ysPfThwkYKoNlgpHjDU/TgS9kIv2OI74pDUkp4=
+go.opentelemetry.io/collector/featuregate v0.73.0 h1:hpHKXmRiJqMLefIzXwIuqDo9df2HcI/66IAKLo+g7nc=
+go.opentelemetry.io/collector/featuregate v0.73.0/go.mod h1:oIrO4ysPfThwkYKoNlgpHjDU/TgS9kIv2OI74pDUkp4=
 go.opentelemetry.io/collector/pdata v1.0.0-rc6.0.20230306190955-966865880707 h1:26JxspeXuMQ0xOPqVXnmkZEB+T04sSep/+Xt7aYfzU0=
 go.opentelemetry.io/collector/pdata v1.0.0-rc6.0.20230306190955-966865880707/go.mod h1:YSlrEri/QKzmeaN8rio2iPYsxPUJo4WkL6fQc4Ph7fk=
 go.opentelemetry.io/collector/receiver v0.0.0-20230302200458-4071a47d0ee3 h1:8UjcYRRoc9F2RoqzOPEs7+1YYklzW2k/VcIjSbCrj/Y=
