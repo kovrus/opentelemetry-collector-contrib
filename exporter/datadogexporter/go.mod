@@ -9,7 +9,7 @@ require (
 	github.com/DataDog/gohai v0.0.0-20220718130825-1776f9beb9cc
 	github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/attributes v0.2.1
 	github.com/DataDog/opentelemetry-mapping-go/pkg/otlp/metrics v0.2.1
-	github.com/DataDog/opentelemetry-mapping-go/pkg/quantile v0.2.1
+	github.com/DataDog/opentelemetry-mapping-go/pkg/quantile v0.5.1
 	github.com/DataDog/sketches-go v1.4.2
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.13.1
 	github.com/aws/aws-sdk-go v1.44.267
@@ -23,7 +23,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.78.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.78.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver v0.78.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/collector v0.78.3-0.20230525165144-87dd85a6c034
 	go.opentelemetry.io/collector/component v0.78.3-0.20230525165144-87dd85a6c034
 	go.opentelemetry.io/collector/confmap v0.78.3-0.20230525165144-87dd85a6c034
