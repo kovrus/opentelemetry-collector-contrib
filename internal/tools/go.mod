@@ -14,7 +14,7 @@ require (
 	go.opentelemetry.io/build-tools/crosslink v0.7.0
 	go.opentelemetry.io/build-tools/issuegenerator v0.7.0
 	go.opentelemetry.io/build-tools/multimod v0.7.0
-	go.opentelemetry.io/collector/cmd/builder v0.77.0
+	go.opentelemetry.io/collector/cmd/builder v0.81.0
 	golang.org/x/tools v0.9.1
 	golang.org/x/vuln v0.1.0
 )
@@ -111,6 +111,7 @@ require (
 	github.com/kisielk/gotool v1.0.0 // indirect
 	github.com/kkHAIKE/contextcheck v1.1.3 // indirect
 	github.com/knadh/koanf v1.5.0 // indirect
+	github.com/knadh/koanf/v2 v2.0.1 // indirect
 	github.com/kulti/thelper v0.6.3 // indirect
 	github.com/kunwardeep/paralleltest v1.0.6 // indirect
 	github.com/kyoh86/exportloopref v0.1.11 // indirect
@@ -176,7 +177,7 @@ require (
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
-	github.com/stretchr/testify v1.8.3 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/t-yuki/gocover-cobertura v0.0.0-20180217150009-aaee18c8195c // indirect
 	github.com/tdakkota/asciicheck v0.1.1 // indirect
