@@ -13,9 +13,9 @@ require (
 	go.opentelemetry.io/collector/config/confighttp v0.81.0
 	go.opentelemetry.io/collector/config/configopaque v0.81.0
 	go.opentelemetry.io/collector/config/configtls v0.81.0
-	go.opentelemetry.io/collector/confmap v0.81.0
+	go.opentelemetry.io/collector/confmap v0.92.0
 	go.opentelemetry.io/collector/consumer v0.81.0
-	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0013
+	go.opentelemetry.io/collector/featuregate v1.0.1
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0013
 	go.opentelemetry.io/collector/receiver v0.81.0
 	go.uber.org/multierr v1.11.0
@@ -81,7 +81,6 @@ require (
 	go.opentelemetry.io/otel/metric v1.16.0 // indirect
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
-	go.uber.org/goleak v1.2.1 // indirect
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
