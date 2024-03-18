@@ -30,7 +30,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
@@ -84,7 +84,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
@@ -97,7 +97,7 @@ jobs:
         if: steps.go-cache.outputs.cache-hit != 'true'
         run: make install-tools
       - name: Cache Lint Build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/go-build
           key: go-lint-build-${{ matrix.group }}-${{ runner.os }}-${{ hashFiles('**/go.sum') }}
@@ -145,7 +145,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
@@ -168,7 +168,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
@@ -245,7 +245,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
@@ -258,7 +258,7 @@ jobs:
         if: steps.go-cache.outputs.cache-hit != 'true'
         run: make install-tools
       - name: Cache Test Build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/go-build
           key: go-test-build-${{ runner.os }}-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
@@ -322,7 +322,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
@@ -343,7 +343,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
@@ -369,7 +369,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
@@ -433,7 +433,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
@@ -513,7 +513,7 @@ jobs:
           path: ./bin/
       - name: Cache Wix
         id: wix-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             "C:\Program Files (x86)\WiX Toolset v3.11"
@@ -568,7 +568,7 @@ jobs:
       - name: Cache Go
         id: go-cache
         timeout-minutes: 5
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/bin
