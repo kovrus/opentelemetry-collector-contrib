@@ -1,6 +1,7 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/processor/tailsamplingprocessor
 
 go 1.19
+toolchain go1.24.1
 
 require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
@@ -8,17 +9,17 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.81.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/filter v0.81.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/ottl v0.81.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/collector v0.81.0
 	go.opentelemetry.io/collector/component v0.81.0
-	go.opentelemetry.io/collector/config/configtelemetry v0.81.0
+	go.opentelemetry.io/collector/config/configtelemetry v0.122.1
 	go.opentelemetry.io/collector/confmap v0.81.0
 	go.opentelemetry.io/collector/consumer v0.81.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0013
 	go.opentelemetry.io/collector/processor v0.81.0
 	go.opentelemetry.io/otel/trace v1.16.0
-	go.uber.org/goleak v1.2.1
+	go.uber.org/goleak v1.3.0
 	go.uber.org/zap v1.24.0
 )
 
