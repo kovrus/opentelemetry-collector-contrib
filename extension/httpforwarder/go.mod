@@ -1,13 +1,14 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/extension/httpforwarder
 
 go 1.19
+toolchain go1.24.1
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.81.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component v0.81.0
 	go.opentelemetry.io/collector/config/confighttp v0.81.0
-	go.opentelemetry.io/collector/config/configopaque v0.81.0
+	go.opentelemetry.io/collector/config/configopaque v1.28.1
 	go.opentelemetry.io/collector/config/configtls v0.81.0
 	go.opentelemetry.io/collector/confmap v0.81.0
 	go.opentelemetry.io/collector/extension v0.81.0
