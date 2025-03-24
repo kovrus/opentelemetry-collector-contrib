@@ -1,6 +1,7 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/opencensus
 
 go 1.19
+toolchain go1.24.1
 
 require (
 	github.com/census-instrumentation/opencensus-proto v0.4.1
@@ -8,10 +9,10 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.81.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.81.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0013
-	go.opentelemetry.io/collector/semconv v0.81.0
+	go.opentelemetry.io/collector/semconv v0.122.1
 	google.golang.org/protobuf v1.31.0
 )
 
