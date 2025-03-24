@@ -2,9 +2,10 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/jaegerthrifthttpexporter
 
 go 1.19
+toolchain go1.24.1
 
 require (
-	github.com/apache/thrift v0.18.1
+	github.com/apache/thrift v0.21.0
 	github.com/jaegertracing/jaeger v1.41.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/jaeger v0.81.0
 	github.com/stretchr/testify v1.8.4
