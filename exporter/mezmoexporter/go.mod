@@ -1,13 +1,13 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/mezmoexporter
 
-go 1.19
+go 1.23.0
 
 require (
 	github.com/cenkalti/backoff/v4 v4.2.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component v0.81.0
 	go.opentelemetry.io/collector/config/confighttp v0.81.0
-	go.opentelemetry.io/collector/config/configopaque v0.81.0
+	go.opentelemetry.io/collector/config/configopaque v1.32.0
 	go.opentelemetry.io/collector/confmap v0.81.0
 	go.opentelemetry.io/collector/exporter v0.81.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0013
