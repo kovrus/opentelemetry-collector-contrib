@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/cmd/mdatagen
 
-go 1.19
+go 1.23.0
 
 require (
 	github.com/google/go-cmp v0.5.9
@@ -12,7 +12,7 @@ require (
 	go.opentelemetry.io/collector/semconv v0.81.0
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.24.0
-	golang.org/x/text v0.11.0
+	golang.org/x/text v0.26.0
 )
 
 require (
