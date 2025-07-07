@@ -1,9 +1,9 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver
 
-go 1.19
+go 1.21
 
 require (
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.7.0
 	github.com/lib/pq v1.10.9
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.81.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.81.0
