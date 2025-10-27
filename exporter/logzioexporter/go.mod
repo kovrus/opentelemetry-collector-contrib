@@ -1,17 +1,17 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/logzioexporter
 
-go 1.19
+go 1.24.0
 
 require (
 	github.com/hashicorp/go-hclog v1.5.0
 	github.com/jaegertracing/jaeger v1.41.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.81.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/jaeger v0.81.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/collector/component v0.81.0
 	go.opentelemetry.io/collector/config/configcompression v0.81.0
 	go.opentelemetry.io/collector/config/confighttp v0.81.0
-	go.opentelemetry.io/collector/config/configopaque v0.81.0
+	go.opentelemetry.io/collector/config/configopaque v1.44.0
 	go.opentelemetry.io/collector/confmap v0.81.0
 	go.opentelemetry.io/collector/consumer v0.81.0
 	go.opentelemetry.io/collector/exporter v0.81.0
