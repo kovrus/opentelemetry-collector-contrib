@@ -1,12 +1,12 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/extension/bearertokenauthextension
 
-go 1.19
+go 1.24.0
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/collector/component v0.81.0
-	go.opentelemetry.io/collector/config/configopaque v0.81.0
+	go.opentelemetry.io/collector/config/configopaque v1.44.0
 	go.opentelemetry.io/collector/confmap v0.81.0
 	go.opentelemetry.io/collector/extension v0.81.0
 	go.opentelemetry.io/collector/extension/auth v0.81.0
