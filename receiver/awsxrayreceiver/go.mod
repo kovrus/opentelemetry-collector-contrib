@@ -1,10 +1,10 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awsxrayreceiver
 
-go 1.19
+go 1.21
 
 require (
 	github.com/aws/aws-sdk-go v1.44.301
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.3.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/proxy v0.81.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/xray v0.81.0
