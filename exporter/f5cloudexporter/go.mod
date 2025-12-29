@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/f5cloudexporter
 
-go 1.19
+go 1.24.0
 
 require (
 	github.com/cenkalti/backoff/v4 v4.2.1
@@ -12,13 +12,12 @@ require (
 	go.opentelemetry.io/collector/confmap v0.81.0
 	go.opentelemetry.io/collector/exporter v0.81.0
 	go.opentelemetry.io/collector/exporter/otlphttpexporter v0.81.0
-	golang.org/x/oauth2 v0.10.0
+	golang.org/x/oauth2 v0.34.0
 	google.golang.org/api v0.131.0
 )
 
 require (
-	cloud.google.com/go/compute v1.20.1 // indirect
-	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
