@@ -3,7 +3,7 @@
 
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/solacereceiver
 
-go 1.19
+go 1.23
 
 require (
 	github.com/Azure/go-amqp v1.0.1
@@ -18,7 +18,7 @@ require (
 	go.opentelemetry.io/collector/receiver v0.81.0
 	go.opentelemetry.io/otel v1.16.0
 	go.uber.org/zap v1.24.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.36.11
 )
 
 require (
