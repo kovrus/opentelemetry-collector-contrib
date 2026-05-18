@@ -1,18 +1,19 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension
 
-go 1.19
+go 1.25.0
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.81.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/collector/component v0.81.0
-	go.opentelemetry.io/collector/config/confignet v0.81.0
+	go.opentelemetry.io/collector/config/confignet v1.58.0
 	go.opentelemetry.io/collector/confmap v0.81.0
 	go.opentelemetry.io/collector/extension v0.81.0
 	go.uber.org/zap v1.24.0
 )
 
 require (
+	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
