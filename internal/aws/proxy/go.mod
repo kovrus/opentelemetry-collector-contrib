@@ -1,17 +1,18 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/proxy
 
-go 1.19
+go 1.25.0
 
 require (
 	github.com/aws/aws-sdk-go v1.44.301
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.81.0
-	github.com/stretchr/testify v1.8.4
-	go.opentelemetry.io/collector/config/confignet v0.81.0
+	github.com/stretchr/testify v1.11.1
+	go.opentelemetry.io/collector/config/confignet v1.58.0
 	go.opentelemetry.io/collector/config/configtls v0.81.0
 	go.uber.org/zap v1.24.0
 )
 
 require (
+	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
